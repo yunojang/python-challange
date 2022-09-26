@@ -28,17 +28,36 @@ class Snake:
     def __init__(self) -> None:
         self.segments = []
         self.direction = "Right"
-        self.speed = 0.8
+        self.speed = 0.9
+
+        self.size = 0
         self.create_snake()
+        # self.last_tail = None
         self.head = self.segments[0]
 
     def create_snake(self):
         for pos in START_POS:
-            body = Body()
-            body.setpos(pos)
-            self.segments.append(body)
+            self.add_segment(pos)
+
+    def extend(self):
+        # if not self.last_tail:
+        #     return
+
+        # 새로운 꼬리가 이전 꼬리랑 같아도,
+        # move에서 이전 것 따라가기 때문에, 한번 더 남아있는다..!
+        tail_pos = self.segments[-1].pos()
+        self.add_segment(tail_pos)
+
+    def add_segment(self, position):
+        segment = Body()
+        segment.setpos(position)
+        self.segments.append(segment)
+        self.size += 1
 
     def move(self):
+        # self.last_tail = self.segments[-1]
+
+        # list last ~ index 1
         for i in range(len(self.segments) - 1, 0, -1):
             foraward = self.segments[i - 1]
             (new_x, new_y) = foraward.pos()
