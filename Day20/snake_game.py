@@ -36,7 +36,7 @@ food = Food(max_x, max_y)
 game_is_on = True
 
 while game_is_on:
-    sleep(1 - snake.speed)
+    sleep(0.1)
     snake.move()  # all move
     screen.update()  # update
 
