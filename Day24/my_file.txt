@@ -1,0 +1,3 @@
+my name is yuno, age is 23
+my hobby is exercise, programming
+hi!any stringany string
