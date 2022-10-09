@@ -1,12 +1,18 @@
 import pandas
+import turtle
 from turtle import Screen, Turtle, circle
 
 screen = Screen()
+image_path = "blank_states.gif"
+screen.addshape(image_path)
+
+turtle.shape(image_path)
+
 
 data = pandas.read_csv("50_states.csv")
 states = data.state.to_list()
-score = 0
-
+missing_states = states
+guessed_states = []
 
 def draw_state(state, x, y):
     writer = Turtle()
@@ -19,22 +25,21 @@ def draw_state(state, x, y):
 
 while len(states) > 0:
     user_state = screen.textinput(
-        title=f"{score}/{len(states)} Guess State", prompt="Input another state"
+        title=f"{len(guessed_states)}/{len(states)} Guess State", prompt="Input another state"
     )
-    user_state = user_state.title()
+
+    user_state = user_state.title() # title is upper to first char
 
     if user_state == "Exit":
+        missing_states = [state for state in missing_states if state not in guessed_states]
         break
 
-    if user_state in states:
-        idx = states.index(user_state)
-        states = states[0:idx] + states[idx + 1 :]
+    if user_state in missing_states:
+        guessed_states.append(user_state)
 
         correct = data[data.state == user_state]
-
         draw_state(user_state, int(correct.x), int(correct.y))
-        score += 1
 
 # screen.mainloop()
 # rest states csv
-pandas.Series(states).to_csv("states_to_learn.csv")
+pandas.Series(missing_states).to_csv("states_to_learn.csv")
