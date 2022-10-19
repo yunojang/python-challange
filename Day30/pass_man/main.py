@@ -20,6 +20,22 @@ def handle_gen_password():
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 
 
+def open_data():
+    try:
+        with open("data.json", "r") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        print("Create data.json file")
+        data = {}
+    except json.JSONDecodeError:
+        data = {}
+
+    with open("data.json", "w") as f:
+        json.dump(data, f, indent=2)
+
+    return data
+
+
 def save_password(**kw):
     website = kw.get("website")
     email = kw.get("email")
@@ -28,13 +44,9 @@ def save_password(**kw):
     new_data = {website: {"email": email, "password": password}}
     # data = f"{website} | {email} | {password}\n"
 
-    try:
-        with open("data.json", "r") as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        print("Create data.json file")
-        data = {}
+    data = open_data()
     data.update(new_data)  # update to dictionary
+
     with open("data.json", "w") as f:
         json.dump(data, f, indent=2)
 
@@ -46,7 +58,7 @@ def handle_add_info():
 
     if not website or not email or not password:
         messagebox.showerror(
-            title="Error", message="Please dont't leave any fields empty!!"
+            title="Error", message="Please dont leave any fields empty!!"
         )
         return
 
@@ -65,16 +77,28 @@ def handle_add_info():
     website_entry.delete(0, END)
     password_entry.delete(0, END)
 
-    # json.dump - mode="w"
-    # json.dump(
-    #     data,
-    #     f,
-    #     indent=2,
-    # )
 
-    # json.load - mode="r"
-    # data = json.load(f)
-    # print(data)
+# ---------------------------- Search ------------------------------- #
+
+
+def handle_search():
+    website = website_entry.get()
+
+    if len(website) <= 0:
+        messagebox.showerror(title="Error", message="Sorry, website is empty")
+        return
+
+    data = open_data()
+
+    if website in data:
+        account = data[website]
+        email = account["email"]
+        password = account["password"]
+        messagebox.showinfo(
+            title=website, message=f"Email: {email}\nPassword: {password}"
+        )
+    else:
+        messagebox.showerror(title="Error", message="No data file found")
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -101,7 +125,8 @@ website_entry.grid(
 )
 website_entry.focus()
 
-serch_btn = Button()
+serch_btn = Button(text="Search", width=15, command=handle_search)
+serch_btn.grid(row=1, column=2)
 
 email_label = Label(text="Email/username:")
 email_label.grid(row=2, column=0)
